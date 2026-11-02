@@ -1,0 +1,11 @@
+sample_id,site,bacterium,antibiotic,antibiotic_family,phenotype,gene,gene_abundance
+S001,TRIANGLE,Escherichia coli,Tetracycline,Tetracyclines,Resistant,tetA,12
+S002,TRIANGLE,Klebsiella pneumoniae,Meropenem,Carbapenems,Resistant,blaOXA,8
+S003,LIMETE,Escherichia coli,Ampicillin,Penicillins,Resistant,blaOXA,15
+S004,LIMETE,Enterobacter cloacae,Sulfamethoxazole-Trimethoprim,Sulfonamides,Resistant,sul2,9
+S005,MONASTERE,Escherichia coli,Tetracycline,Tetracyclines,Susceptible,tetA,2
+S006,MONASTERE,Klebsiella pneumoniae,Cefepime,Cephems,Susceptible,blaOXA,1
+S007,TRIANGLE,Enterobacter cloacae,Norfloxacin,Fluoroquinolones,Resistant,,0
+S008,LIMETE,Klebsiella pneumoniae,Ertapenem,Carbapenems,Resistant,blaOXA,11
+S009,MONASTERE,Escherichia coli,Ampicillin,Penicillins,Susceptible,,0
+S010,TRIANGLE,Escherichia coli,Aztreonam,Monobactams,Resistant,blaOXA,6
