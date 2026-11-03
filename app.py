@@ -6,6 +6,9 @@ from reportlab.platypus import Image
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
+from modules.data_validation import verifier_donnees
+from modules.data_loader import charger_donnees
+from modules.analysis import calculer_resistance_par_antibiotique, comparer_sites
 st.set_page_config(
     page_title="AMR Surveillance Platform",
     page_icon="🧬",
@@ -22,7 +25,14 @@ st.write(
 
 # Chargement des données de démonstration
 data_path = "data/demo_amr.csv"
-df = pd.read_csv(data_path)
+df = charger_donnees(data_path)
+erreurs = verifier_donnees(df)
+
+if erreurs:
+    st.error("Les données ne sont pas valides :")
+    for erreur in erreurs:
+        st.write(f"- {erreur}")
+    st.stop()
 
 st.info("Données fictives de démonstration — elles ne représentent pas des résultats réels.")
 
@@ -85,23 +95,7 @@ st.subheader("Taux de résistance par antibiotique")
 
 st.subheader("Taux de résistance par antibiotique")
 
-resume = (
-    df_filtre.groupby("antibiotic")
-    .agg(
-        echantillons_tests=("phenotype", "count"),
-        echantillons_resistants=(
-            "phenotype",
-            lambda x: (x == "Resistant").sum()
-        )
-    )
-    .reset_index()
-)
-
-resume["taux_resistance_pct"] = (
-    pd.to_numeric(resume["echantillons_resistants"], errors="coerce")
-    / pd.to_numeric(resume["echantillons_tests"], errors="coerce")
-    * 100
-).round(1)
+resume = calculer_resistance_par_antibiotique(df_filtre)
 
 st.dataframe(resume, width="stretch")
 
@@ -118,27 +112,7 @@ st.caption("Résultats calculés uniquement à partir des données actuellement 
 
 st.header("Comparaison des sites")
 
-comparaison = (
-    df_filtre.groupby(["site", "antibiotic"])["phenotype"]
-    .agg(
-        echantillons_testes="count",
-        echantillons_resistants=lambda x: (x == "Resistant").sum()
-    )
-    .reset_index()
-)
-comparaison["echantillons_resistants"] = pd.to_numeric(
-    comparaison["echantillons_resistants"], errors="coerce"
-)
-comparaison["echantillons_testes"] = pd.to_numeric(
-    comparaison["echantillons_testes"], errors="coerce"
-)
-
-comparaison["taux_resistance_pct"] = (
-    comparaison["echantillons_resistants"]
-    .div(comparaison["echantillons_testes"].replace(0, pd.NA))
-    .mul(100)
-    .round(1)
-)
+comparaison = comparer_sites(df_filtre)
 
 st.dataframe(comparaison, width="stretch")
 
